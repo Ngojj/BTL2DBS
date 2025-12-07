@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản Lý Người Dùng & Khóa Học - E-Learning</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+
+    <style>
+      body {
+        background-color: #f8f9fa;
+      }
+      .container {
+        max-width: 1200px;
+        margin: auto;
+        padding-top: 30px;
+      }
+      .card-header {
+        background-color: #007bff;
+        color: white;
+      }
+      .bg-success .card-header {
+        background-color: #198754 !important;
+      }
+      .alert-fixed {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1050;
+        min-width: 300px;
+      }
+      .btn-action {
+        margin: 0 3px;
+      }
+      /* CSS cho thông báo Alert */
+      .alert-error {
+        background-color: #f8d7da;
+        color: #721c24;
+        border-color: #f5c6cb;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="text-center text-primary mb-5">Ứng dụng E-Learning BTL2</h1>
+
+      <div id="user-management" class="card shadow-sm mb-5">
+        <div class="card-header">
+          <h5 class="mb-0">⚙️ 1. Quản lý Người Dùng (Thủ tục 2.1)</h5>
+        </div>
+        <div class="card-body">
+          <div id="alertContainer" class="alert-fixed"></div>
+
+          <form id="userForm">
+            <input type="hidden" id="userId" />
+
+            <div class="row mb-3">
+              <div class="col-md-3">
+                <label class="form-label">ID (Sửa/Xóa):</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="id"
+                  placeholder="Nhập ID"
+                />
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Email:</label>
+                <input type="email" class="form-control" id="email" required />
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">First Name:</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="firstName"
+                  required
+                />
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Last Name:</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="lastName"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-3">
+                <label class="form-label">Username:</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="username"
+                  required
+                />
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Password:</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="password"
+                  required
+                />
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Role:</label>
+                <select class="form-select" id="role" required>
+                  <option value="student">Student</option>
+                  <option value="teacher">Teacher</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Bank Account:</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="bankAccount"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-12">
+                <label class="form-label">Bank Name:</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="bankName"
+                  required
+                />
+              </div>
+            </div>
+
+            <button type="submit" id="btnAdd" class="btn btn-primary me-2">
+              <i class="fas fa-plus"></i> Thêm Mới
+            </button>
+            <button type="button" id="btnUpdate" class="btn btn-info me-2">
+              <i class="fas fa-edit"></i> Cập Nhật
+            </button>
+            <button type="button" id="btnDelete" class="btn btn-danger">
+              <i class="fas fa-trash-alt"></i> Xóa
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div id="course-list" class="card shadow-sm">
+        <div class="card-header bg-success">
+          <h5 class="mb-0">
+            📚 2. Danh sách Khóa học Giáo viên (Thủ tục 2.3 & CRUD)
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="row mb-3">
+            <div class="col-md-4">
+              <label class="form-label">Teacher ID:</label>
+              <input
+                type="text"
+                class="form-control"
+                id="searchTeacherId"
+                placeholder="Nhập ID Giáo viên"
+                value="1"
+              />
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Giá Tối đa (Filter):</label>
+              <input
+                type="number"
+                class="form-control"
+                id="searchMaxPrice"
+                placeholder="Nhập giá tối đa (ví dụ: 100)"
+                value="999999"
+              />
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+              <button id="btnSearchCourses" class="btn btn-success w-100">
+                <i class="fas fa-search"></i> Tìm Kiếm & Sắp Xếp
+              </button>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table
+              id="courseTable"
+              class="table table-striped table-bordered table-hover"
+            >
+              <thead>
+                <tr>
+                  <th>ID Khóa học</th>
+                  <th>Tên Khóa học</th>
+                  <th>Giá (USD)</th>
+                  <th>Tên Giáo viên</th>
+                  <th>Thao tác</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // --- KHAI BÁO CÁC HẰNG VÀ BIẾN TOÀN CỤC ---
+      const API_URL = "/api/users"; // API cho User (CRUD và GET courses)
+      const COURSE_API_URL = "/api/courses"; // API cho Course (CRUD)
+      const courseTableBody = document.querySelector("#courseTable tbody");
+      let currentCourses = []; // Dùng để lưu dữ liệu khóa học hiện tại (cho Sửa/Xóa)
+
+      // Hàm hiển thị thông báo cố định (Alerts)
+      function showAlert(content, type = "success") {
+        const alertHtml = `
+              <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                  ${content}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+          `;
+        const container = document.getElementById("alertContainer");
+        // Clear old alerts and show new one
+        container.innerHTML = alertHtml;
+        setTimeout(() => {
+          const alertElement = container.querySelector(".alert");
+          if (alertElement) new bootstrap.Alert(alertElement).close();
+        }, 5000);
+      }
+
+      // --- LOGIC FORM USER (CRUD) ---
+
+      function getFormData() {
+        return {
+          id: document.getElementById("id").value,
+          email: document.getElementById("email").value,
+          firstName: document.getElementById("firstName").value,
+          lastName: document.getElementById("lastName").value,
+          username: document.getElementById("username").value,
+          password: document.getElementById("password").value,
+          role: document.getElementById("role").value,
+          bankName: document.getElementById("bankName").value,
+          bankAccount: document.getElementById("bankAccount").value,
+        };
+      }
+
+      document
+        .getElementById("userForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const data = getFormData();
+          try {
+            const response = await fetch(API_URL, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(data),
+            });
+            const result = await response.json();
+            if (response.ok) {
+              showAlert(
+                "Thêm mới User thành công! " + result.message,
+                "success"
+              );
+              document.getElementById("userForm").reset();
+            } else {
+              showAlert("Lỗi Thêm: " + result.error, "danger");
+            }
+          } catch (error) {
+            showAlert("Lỗi kết nối: " + error.message, "danger");
+          }
+        });
+
+      document
+        .getElementById("btnUpdate")
+        .addEventListener("click", async () => {
+          const data = getFormData();
+          const userId = data.id;
+          if (!userId) {
+            showAlert("Vui lòng nhập ID User cần cập nhật.", "warning");
+            return;
+          }
+          try {
+            const response = await fetch(`${API_URL}/${userId}`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(data),
+            });
+            const result = await response.json();
+            if (response.ok) {
+              showAlert(`Cập nhật User ID ${userId} thành công!`, "success");
+            } else {
+              showAlert("Lỗi Cập Nhật: " + result.error, "danger");
+            }
+          } catch (error) {
+            showAlert("Lỗi kết nối: " + error.message, "danger");
+          }
+        });
+
+      document
+        .getElementById("btnDelete")
+        .addEventListener("click", async () => {
+          const userId = document.getElementById("id").value;
+          if (
+            !userId ||
+            !confirm(`Bạn có chắc chắn muốn xóa User ID ${userId}?`)
+          ) {
+            return;
+          }
+          try {
+            const response = await fetch(`${API_URL}/${userId}`, {
+              method: "DELETE",
+            });
+            const result = await response.json();
+            if (response.ok) {
+              showAlert(
+                `Xóa User ID ${userId} thành công! ${result.message}`,
+                "success"
+              );
+              document.getElementById("userForm").reset();
+            } else {
+              showAlert("Lỗi Xóa Nghiệp Vụ: " + result.error, "danger");
+            }
+          } catch (error) {
+            showAlert("Lỗi kết nối: " + error.message, "danger");
+          }
+        });
+
+      // --- LOGIC SỬA/XÓA KHÓA HỌC (MỚI) ---
+
+      // Hàm Sửa Khóa học
+      function editCourse(courseId) {
+        // Sử dụng c.courseId (giữ tên thuộc tính cũ để khớp với Backend hiện tại của bạn)
+        const course = currentCourses.find((c) => c.courseId == courseId);
+        if (!course) return;
+
+        // Giả định ngôn ngữ mặc định nếu không có trong dữ liệu trả về
+        const currentLanguage = course.language || "Vietnamese";
+
+        // Sử dụng course.courseName (giữ tên thuộc tính cũ)
+        const newPrice = prompt(
+          `Nhập GIÁ MỚI cho khóa học "${course.courseName}" (Giá cũ: $${course.price}):`,
+          course.price
+        );
+
+        if (newPrice !== null && !isNaN(newPrice) && parseFloat(newPrice) > 0) {
+          const newPriceFloat = parseFloat(newPrice);
+
+          fetch(`${COURSE_API_URL}/${courseId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              // Gửi đủ tham số cho thủ tục update_course
+              name: course.courseName, // Dùng tên cũ nhưng gửi lên server dưới dạng 'name' (giả định API PUT cần 'name')
+              language: currentLanguage,
+              price: newPriceFloat,
+            }),
+          })
+            .then((response) => {
+              if (!response.ok) {
+                return response.json().then((err) => {
+                  throw new Error(err.error || "Lỗi cập nhật server.");
+                });
+              }
+              return response.json();
+            })
+            .then((result) => {
+              showAlert(result.message, "success");
+              loadCourses(); // Tải lại danh sách
+            })
+            .catch((error) => {
+              showAlert(`Lỗi cập nhật Khóa học: ${error.message}`, "danger");
+            });
+        } else if (newPrice !== null) {
+          showAlert("Lỗi: Giá nhập vào không hợp lệ hoặc bị hủy.", "warning");
+        }
+      }
+
+      // Hàm Xóa Khóa học
+      function deleteCourse(courseId) {
+        if (
+          !confirm(`Bạn có chắc chắn muốn XÓA Khóa học ID ${courseId} không?`)
+        ) {
+          return;
+        }
+
+        fetch(`${COURSE_API_URL}/${courseId}`, {
+          method: "DELETE",
+        })
+          .then((response) => {
+            if (!response.ok) {
+              return response.json().then((err) => {
+                throw new Error(err.error || "Lỗi xóa server.");
+              });
+            }
+            return response.json();
+          })
+          .then((result) => {
+            showAlert(result.message, "success");
+            loadCourses(); // Tải lại danh sách
+          })
+          .catch((error) => {
+            showAlert(`Lỗi khi xóa Khóa học: ${error.message}`, "danger");
+          });
+      }
+
+      // --- LOGIC TẢI KHÓA HỌC (Thủ tục 2.3) ---
+
+      async function loadCourses() {
+        const teacherId = document.getElementById("searchTeacherId").value;
+        const maxPrice = document.getElementById("searchMaxPrice").value;
+        courseTableBody.innerHTML =
+          '<tr><td colspan="5" class="text-center">Đang tải...</td></tr>';
+
+        if (isNaN(teacherId) || teacherId <= 0) {
+          courseTableBody.innerHTML =
+            '<tr><td colspan="5" class="text-center alert-danger">Lỗi: Teacher ID không hợp lệ.</td></tr>';
+          return;
+        }
+
+        try {
+          const response = await fetch(
+            `${API_URL}/courses/${teacherId}?maxPrice=${maxPrice}`
+          );
+          const result = await response.json();
+
+          courseTableBody.innerHTML = "";
+
+          if (response.ok) {
+            currentCourses = result.data || []; // Lưu dữ liệu gốc
+
+            if (currentCourses.length > 0) {
+              currentCourses.forEach((course) => {
+                const row = courseTableBody.insertRow();
+
+                // HIỂN THỊ DỮ LIỆU: Sử dụng tên thuộc tính cũ: courseId, courseName
+                row.insertCell().textContent = course.courseId; // ID Khóa học
+                row.insertCell().textContent = course.courseName; // Tên Khóa học
+                row.insertCell().textContent = `$${(
+                  course.price || 0
+                ).toLocaleString("en-US")}`;
+
+                // Giả định tên Giáo viên
+                row.insertCell().textContent =
+                  course.teacherName || "ID: " + teacherId;
+
+                // CELL THAO TÁC
+                const actionCell = row.insertCell();
+                actionCell.innerHTML = `
+                    <button class="btn btn-sm btn-info btn-action" onclick="editCourse(${course.courseId})" title="Sửa Khóa học">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger btn-action" onclick="deleteCourse(${course.courseId})" title="Xóa Khóa học">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                `;
+              });
+            } else {
+              courseTableBody.innerHTML =
+                '<tr><td colspan="5" class="text-center">Không tìm thấy khóa học nào.</td></tr>';
+            }
+          } else {
+            courseTableBody.innerHTML = `<tr><td colspan="5" class="text-center alert-danger">Lỗi: ${result.error}</td></tr>`;
+          }
+        } catch (error) {
+          courseTableBody.innerHTML = `<tr><td colspan="5" class="text-center alert-danger">Lỗi kết nối: ${error.message}</td></tr>`;
+        }
+      }
+
+      document
+        .getElementById("btnSearchCourses")
+        .addEventListener("click", loadCourses);
+
+      // Tải danh sách lần đầu
+      loadCourses();
+    </script>
+  </body>
+</html>

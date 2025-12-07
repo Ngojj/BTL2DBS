@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Tính Thu Nhập Giáo Viên - E-Learning</title>
+    <style>
+      /* CSS tương tự file manage_user.html */
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      .container {
+        max-width: 600px;
+        margin: auto;
+      }
+      h2 {
+        border-bottom: 2px solid #ccc;
+        padding-bottom: 5px;
+      }
+      .form-group {
+        margin-bottom: 10px;
+      }
+      input[type="text"],
+      input[type="date"] {
+        width: 100%;
+        padding: 8px;
+        box-sizing: border-box;
+      }
+      button {
+        padding: 10px 15px;
+        cursor: pointer;
+        background-color: #007bff;
+        color: white;
+        border: none;
+      }
+      .result-box {
+        margin-top: 20px;
+        padding: 15px;
+        border: 1px solid #ccc;
+        background-color: #f9f9f9;
+      }
+      .alert-error {
+        background-color: #f8d7da;
+        color: #721c24;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>3. Tính Thu Nhập Giáo Viên (Hàm 2.4)</h1>
+
+      <div id="income-calculator">
+        <div id="error-message" class="alert-error" style="display: none"></div>
+
+        <div class="form-group">
+          <label>Teacher ID:</label>
+          <input type="text" id="teacherId" required value="1" />
+        </div>
+        <div class="form-group">
+          <label>Từ Ngày:</label>
+          <input type="date" id="startDate" required value="2024-12-01" />
+        </div>
+        <div class="form-group">
+          <label>Đến Ngày:</label>
+          <input type="date" id="endDate" required value="2024-12-31" />
+        </div>
+
+        <button id="btnCalculateIncome">Tính Thu Nhập</button>
+
+        <div class="result-box">
+          <strong>Thu Nhập Ước Tính:</strong> <span id="incomeResult">...</span>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const API_BASE_URL = "/api/users/income";
+      const errorDiv = document.getElementById("error-message");
+
+      function displayError(content) {
+        errorDiv.textContent = content;
+        errorDiv.style.display = "block";
+      }
+
+      document
+        .getElementById("btnCalculateIncome")
+        .addEventListener("click", async () => {
+          const teacherId = document.getElementById("teacherId").value;
+          const startDate = document.getElementById("startDate").value;
+          const endDate = document.getElementById("endDate").value;
+
+          document.getElementById("incomeResult").textContent = "Đang tính...";
+          errorDiv.style.display = "none";
+
+          if (!teacherId || !startDate || !endDate) {
+            displayError(
+              "Vui lòng nhập đủ Teacher ID, Ngày bắt đầu và Ngày kết thúc."
+            );
+            document.getElementById("incomeResult").textContent = "Lỗi";
+            return;
+          }
+
+          try {
+            // Gọi API GET (gọi Hàm calculate_teacher_income - Hàm 2.4)
+            const response = await fetch(
+              `${API_BASE_URL}/${teacherId}?startDate=${startDate}&endDate=${endDate}`
+            );
+            const result = await response.json();
+
+            if (response.ok) {
+              // Định dạng tiền tệ cho dễ nhìn
+              const formattedIncome = new Intl.NumberFormat("vi-VN", {
+                style: "currency",
+                currency: "VND",
+              }).format(result.income);
+              document.getElementById("incomeResult").textContent =
+                formattedIncome;
+            } else {
+              // Xử lý lỗi (Lỗi kiểm tra tham số, lỗi server)
+              displayError("Lỗi tính toán: " + result.error);
+              document.getElementById("incomeResult").textContent = "Lỗi";
+            }
+          } catch (error) {
+            displayError("Lỗi kết nối máy chủ: " + error.message);
+            document.getElementById("incomeResult").textContent = "Lỗi";
+          }
+        });
+    </script>
+  </body>
+</html>
